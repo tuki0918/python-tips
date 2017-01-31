@@ -1,1 +1,6 @@
 jupyter
+tensorflow
+scipy
+pandas
+pillow
+scikit-learn
