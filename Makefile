@@ -1,6 +1,7 @@
 WORK_DIR=/usr/src/app
+LOG_DIR=$(WORK_DIR)/notebook/logs
 
-.PHONY: build boot bash ssh run
+.PHONY: build boot bash ssh run tensorboard
 build:
 	docker build -t py36-jupyter .
 boot:
@@ -25,3 +26,9 @@ run:
         -v $(PWD):$(WORK_DIR) \
         -w $(WORK_DIR) \
         py36-jupyter $(RUN_ARGS)
+tensorboard:
+	docker run --rm -it \
+	-v $(PWD):$(WORK_DIR) \
+	-w $(WORK_DIR) \
+    -p 6006:6006 \
+	py36-jupyter tensorboard --logdir=$(LOG_DIR)
