@@ -1,7 +1,8 @@
 WORK_DIR=/usr/src/app
-LOG_DIR=$(WORK_DIR)/notebook/logs
+NOTEBOOK_DIR=$(WORK_DIR)/notebook
+LOG_DIR=$(NOTEBOOK_DIR)/logs
 
-.PHONY: build boot bash ssh run tensorboard
+.PHONY: build boot bash ssh run notebook tensorboard
 build:
 	docker build -t py36-jupyter .
 boot:
@@ -11,7 +12,7 @@ boot:
         -w $(WORK_DIR) \
         -p 8888:8888 \
         py36-jupyter sh -c "jupyter notebook \
-        --notebook-dir=$(WORK_DIR)/notebook \
+        --notebook-dir=$(NOTEBOOK_DIR) \
         --no-browser --port=8888 --ip=*"
 bash:
 	docker run --rm -it \
@@ -26,6 +27,11 @@ run:
         -v $(PWD):$(WORK_DIR) \
         -w $(WORK_DIR) \
         py36-jupyter $(RUN_ARGS)
+notebook:
+	docker exec -it py36-tips \
+		sh -c "jupyter nbconvert \
+		--ExecutePreprocessor.timeout=-1 \
+		--to notebook --execute $(NOTEBOOK_DIR)/$(RUN_ARGS)"
 tensorboard:
 	docker run --rm -it \
 	-v $(PWD):$(WORK_DIR) \
